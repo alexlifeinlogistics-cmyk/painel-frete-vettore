@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Custo Frete — Vettore Logística</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f4f0;color:#1a1a18;min-height:100vh}
+.container{max-width:1100px;margin:0 auto;padding:1.5rem 1rem}
+.section{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.section-title{font-size:12px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}
+.metric-grid{display:grid;gap:10px;margin-bottom:1rem}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.metric-card{background:#f4f4f0;border-radius:8px;padding:.85rem 1rem}
+.metric-label{font-size:11px;color:#888780;margin-bottom:4px}
+.metric-value{font-size:20px;font-weight:500;color:#1a1a18}
+.metric-sub{font-size:11px;margin-top:2px}
+.ok{color:#3B6D11}.warn{color:#BA7517}.danger{color:#A32D2D}.neutral{color:#888780}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px}
+.badge-ok{background:#EAF3DE;color:#3B6D11}
+.badge-warn{background:#FAEEDA;color:#BA7517}
+.badge-danger{background:#FCEBEB;color:#A32D2D}
+.badge-neutral{background:#f4f4f0;color:#888780}
+.form-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:.75rem}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:12px;color:#888780}
+.currency-input-wrap{position:relative;display:flex;align-items:center}
+.currency-prefix{position:absolute;left:10px;font-size:13px;color:#888780;pointer-events:none;z-index:1}
+.currency-input{width:100%;padding:7px 10px 7px 34px;font-size:13px;border:0.5px solid #b4b2a9;border-radius:8px;background:#fff;color:#1a1a18;outline:none;text-align:right}
+.currency-input:focus{border-color:#378ADD}
+.plain-input{width:100%;padding:7px 10px;font-size:13px;border:0.5px solid #b4b2a9;border-radius:8px;background:#fff;color:#1a1a18;outline:none}
+.plain-input:focus{border-color:#378ADD}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:500;border:0.5px solid #b4b2a9;border-radius:8px;background:#fff;color:#1a1a18;cursor:pointer}
+.btn:hover{background:#f4f4f0}
+.btn-primary{background:#E6F1FB;color:#185FA5;border-color:#85B7EB}
+.btn-success{background:#EAF3DE;color:#3B6D11;border-color:#97C459}
+.tab-bar{display:flex;gap:4px;margin-bottom:1rem;border-bottom:0.5px solid #d3d1c7}
+.tab{padding:8px 16px;font-size:13px;cursor:pointer;border:none;border-bottom:2px solid transparent;color:#888780;background:none}
+.tab.active{color:#1a1a18;border-bottom-color:#1a1a18;font-weight:500}
+.day-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.day-card{background:#f4f4f0;border-radius:8px;padding:.6rem .75rem;border-left:3px solid transparent;cursor:pointer;transition:background .15s}
+.day-card:hover{background:#e8e8e4}
+.day-card.today{border-left-color:#378ADD}
+.day-card.has-data.ok{border-left-color:#3B6D11}
+.day-card.has-data.warn{border-left-color:#BA7517}
+.day-card.has-data.danger{border-left-color:#A32D2D}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;font-weight:500;color:#888780;text-align:left;padding:6px 8px;border-bottom:0.5px solid #d3d1c7}
+td{padding:6px 8px;border-bottom:0.5px solid #d3d1c7;color:#1a1a18}
+td.right,th.right{text-align:right}
+.week-row{background:#f4f4f0}
+.copy-area{background:#f4f4f0;border-radius:8px;padding:1rem;font-size:13px;line-height:1.7;white-space:pre-wrap;color:#1a1a18;font-family:monospace;max-height:360px;overflow-y:auto}
+.alert-box{padding:.75rem 1rem;border-radius:8px;font-size:13px;margin-bottom:.75rem}
+.alert-info{background:#E6F1FB;color:#185FA5}
+.alert-success{background:#EAF3DE;color:#3B6D11}
+.alert-warn{background:#FAEEDA;color:#BA7517}
+.alert-danger{background:#FCEBEB;color:#A32D2D}
+.sep{height:.5px;background:#d3d1c7;margin:1rem 0}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1rem 1.25rem}
+.filtro-bar{display:flex;gap:6px}
+/* Usa visibility em vez de display:none para o chart não perder dimensão */
+.tab-content{display:block}
+.tab-content.hidden{visibility:hidden;height:0;overflow:hidden;margin:0;padding:0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <div>
+    <div style="font-size:20px;font-weight:500">Controle Custo Frete — Abril 2026</div>
+    <div style="font-size:13px;color:#888780;margin-top:2px">Vettore Logística · Supervisor de Transporte</div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn" onclick="showTab('config')">Configurar metas</button>
+    <button class="btn btn-success" onclick="gerarResumo()">Gerar resumo</button>
+  </div>
+</div>
+
+<div id="painel-geral">
+  <div class="metric-grid g3">
+    <div class="metric-card"><div class="metric-label">Custo total previsto</div><div class="metric-value" id="kpi-prev">R$ 0</div><div class="metric-sub neutral">mês completo</div></div>
+    <div class="metric-card"><div class="metric-label">Custo total realizado acumulado</div><div class="metric-value" id="kpi-real">Sem dados</div><div class="metric-sub neutral" id="kpi-real-sub">—</div></div>
+    <div class="metric-card"><div class="metric-label">Realizado último dia lançado</div><div class="metric-value" id="kpi-dia-real">—</div><div class="metric-sub neutral" id="kpi-dia-real-sub">—</div></div>
+  </div>
+  <div class="metric-grid g4">
+    <div class="metric-card"><div class="metric-label">Transportado previsto mês</div><div class="metric-value" id="kpi-transp-prev">—</div><div class="metric-sub neutral">faturamento previsto</div></div>
+    <div class="metric-card"><div class="metric-label">Transportado realizado acumulado</div><div class="metric-value" id="kpi-transp">—</div><div class="metric-sub neutral" id="kpi-transp-sub">—</div></div>
+    <div class="metric-card"><div class="metric-label">% Custo Frete previsto</div><div class="metric-value" id="kpi-pct-prev">0,00%</div><div class="metric-sub neutral">meta do mês</div></div>
+    <div class="metric-card"><div class="metric-label">% Custo Frete realizado</div><div class="metric-value" id="kpi-pct-real">—</div><div class="metric-sub neutral" id="kpi-pct-sub">—</div></div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" id="btn-tab-lanc" onclick="switchTab('lancamento')">Lançamento diário</button>
+    <button class="tab" id="btn-tab-evol" onclick="switchTab('evolucao')">Evolução</button>
+    <button class="tab" id="btn-tab-sem" onclick="switchTab('semanal')">Semanal</button>
+  </div>
+
+  <div id="tab-lancamento" class="tab-content">
+    <div class="section">
+      <div class="section-title">Selecione o dia</div>
+      <div class="day-grid" id="day-grid"></div>
+    </div>
+    <div class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div>
+          <span style="font-size:15px;font-weight:500" id="form-title">Selecione um dia acima</span>
+          <span style="font-size:12px;color:#888780;margin-left:8px" id="form-dia"></span>
+        </div>
+        <button class="btn btn-primary" onclick="salvarDia()" id="btn-salvar" style="display:none">Salvar dia</button>
+      </div>
+      <div id="form-body" style="color:#888780;font-size:13px">Clique em um dia no calendário para lançar os realizados.</div>
+    </div>
+  </div>
+
+  <div id="tab-evolucao" class="tab-content hidden">
+    <div class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+        <div style="display:flex;gap:16px">
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#888780">
+            <span style="width:28px;height:2px;background:#378ADD;border-top:2px dashed #378ADD;display:inline-block"></span>Previsto
+          </span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#888780">
+            <span style="width:14px;height:14px;background:rgba(30,158,117,0.85);border-radius:2px;display:inline-block"></span>Realizado
+          </span>
+        </div>
+        <div class="filtro-bar">
+          <button class="btn btn-primary" id="f-diario" onclick="setFiltro('diario',this)">Diário</button>
+          <button class="btn" id="f-semanal" onclick="setFiltro('semanal',this)">Semanal</button>
+          <button class="btn" id="f-quinzenal" onclick="setFiltro('quinzenal',this)">Quinzenal</button>
+          <button class="btn" id="f-mensal" onclick="setFiltro('mensal',this)">Mensal</button>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Custo total de frete (R$)</div>
+      <div id="chart-custo" style="width:100%;min-height:280px"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Valor transportado (R$)</div>
+      <div id="chart-transp" style="width:100%;min-height:260px"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">% Custo frete</div>
+      <div id="chart-pct" style="width:100%;min-height:240px"></div>
+    </div>
+  </div>
+
+  <div id="tab-semanal" class="tab-content hidden">
+    <div class="section">
+      <div class="section-title">Resumo semanal — custo de frete</div>
+      <div style="overflow-x:auto">
+        <table><thead><tr>
+          <th>Semana</th><th>Período</th>
+          <th class="right">Custo Prev.</th><th class="right">Custo Real.</th><th class="right">Dif. Custo</th>
+          <th class="right">Transp. Prev.</th><th class="right">Transp. Real.</th>
+          <th class="right">% Prev.</th><th class="right">% Real.</th><th>Status</th>
+        </tr></thead>
+        <tbody id="tbody-semanal"></tbody></table>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Detalhamento por conta</div>
+      <div style="overflow-x:auto">
+        <table><thead><tr><th>Conta</th><th class="right">Previsto mês</th><th class="right">Realizado</th><th class="right">Saldo</th><th>Status</th></tr></thead>
+        <tbody id="tbody-contas"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-config" style="display:none">
+  <button class="btn" onclick="showTab('geral')" style="margin-bottom:1rem">← Voltar ao painel</button>
+  <div class="section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <span style="font-size:15px;font-weight:500">Configuração de metas — Abril 2026</span>
+      <button class="btn btn-primary" onclick="salvarConfig()">Salvar configurações</button>
+    </div>
+    <div class="alert-info alert-box">Informe os valores previstos mensais por conta e o faturamento previsto.</div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:.75rem">Pacotes de custo (R$ mensal)</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Adm — Custo Descarga</label><div class="currency-input-wrap"><span class="currency-prefix">R$</span><input class="currency-input" id="cfg-adm1" placeholder="3.624"></div></div>
+      <div class="form-group"><label class="form-label">Adm — Perdas e Faltas</label><div class="currency-input-wrap"><span class="currency-prefix">R$</span><input class="currency-input" id="cfg-adm2" placeholder="3.020"></div></div>
+      <div class="form-group"><label class="form-label">Analistas — Fretes Terceiros</label><div class="currency-input-wrap"><span class="currency-prefix">R$</span><input class="currency-input" id="cfg-analistas" placeholder="733.575"></div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Roadshow — Pedágios</label><div class="currency-input-wrap"><span class="currency-prefix">R$</span><input class="currency-input" id="cfg-roadshow" placeholder="14.798"></div></div>
+      <div class="form-group"><label class="form-label">Supervisor — Custo Fixo Total</label><div class="currency-input-wrap"><span class="currency-prefix">R$</span><input class="currency-input" id="cfg-supervisor" placeholder="78.621"></div></div>
+      <div class="form-group"><label class="form-label">Faturamento previsto</label><div class="currency-input-wrap"><span class="currency-prefix">R$</span><input class="currency-input" id="cfg-faturamento" placeholder="16.699.232"></div></div>
+    </div>
+    <div class="sep"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+      <div>
+        <div style="font-size:13px;font-weight:500">Limpar todos os dados lançados</div>
+        <div style="font-size:12px;color:#888780;margin-top:2px">Remove os realizados diários. Metas são mantidas.</div>
+      </div>
+      <button class="btn" style="border-color:#F09595;color:#A32D2D" onclick="limparDados()">Limpar dados</button>
+    </div>
+    <div class="sep"></div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:.5rem">Dias úteis — Abril 2026</div>
+    <div id="cfg-dias" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem"></div>
+  </div>
+</div>
+
+<div id="tab-resumo" style="display:none">
+  <button class="btn" onclick="showTab('geral')" style="margin-bottom:1rem">← Voltar ao painel</button>
+  <div class="section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <span style="font-size:15px;font-weight:500">Resumo para divulgação</span>
+      <button class="btn btn-success" onclick="copiarResumo()">Copiar texto</button>
+    </div>
+    <div class="copy-area" id="resumo-texto"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+
+const STORAGE_KEY = 'vettore_frete_v3';
+const DIAS_SEMANA = ['dom','seg','ter','qua','qui','sex','sáb'];
+const CONTAS = ['Adm','Analistas','Roadshow','Supervisor'];
+const PCT_TRANSP = {seg:0.05165,ter:0.22757,qua:0.21155,qui:0.19764,sex:0.28975,'sáb':0.02185};
+const PCT_COMERC = {seg:0.07872,ter:0.20850,qua:0.19261,qui:0.21246,sex:0.28072,'sáb':0.02698};
+
+let state = loadState();
+let selectedDay = null;
+let filtroAtivo = 'diario';
+let abaAtiva = 'lancamento';
+
+function loadState() {
+  try { const s = localStorage.getItem(STORAGE_KEY); if (s) return JSON.parse(s); } catch(e) {}
+  return { config:{adm1:3624,adm2:3020,analistas:733575,roadshow:14798,supervisor:78621,faturamento:16699232,diasUteis:[]}, dias:{} };
+}
+function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {} }
+
+function getDiasAbril() {
+  const out = [];
+  for (let d = 1; d <= 30; d++) {
+    const dt = new Date(2026, 3, d);
+    out.push({ d, dw: dt.getDay(), nome: DIAS_SEMANA[dt.getDay()] });
+  }
+  return out;
+}
+function getDiasUteis() {
+  if (state.config.diasUteis && state.config.diasUteis.length) return state.config.diasUteis;
+  const feriados = [5, 21];
+  return getDiasAbril().filter(x => x.dw >= 1 && x.dw <= 6 && !feriados.includes(x.d)).map(x => x.d);
+}
+
+function parseBRL(str) {
+  if (!str && str !== 0) return 0;
+  if (typeof str === 'number') return str;
+  return parseFloat(String(str).replace(/[R$\s]/g,'').replace(/\./g,'').replace(',','.')) || 0;
+}
+function formatBRL(val) {
+  if (val === null || val === undefined || isNaN(val)) return '';
+  return Number(val).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmt(v) { return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
+function fmtK(v) { return 'R$' + (v >= 1000 ? Math.round(v/1000) + 'k' : Math.round(v)); }
+function fmtPct(v) { return (v*100).toFixed(2).replace('.',',') + '%'; }
+
+function maskBRL(el) {
+  if (el._masked) return; el._masked = true;
+  el.addEventListener('input', function() {
+    let raw = this.value.replace(/\D/g,'');
+    if (!raw) { this.value = ''; return; }
+    this.value = (parseInt(raw,10)/100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  });
+}
+
+function status(real, prev) {
+  if (!real && real !== 0) return 'neutral';
+  const d = (real-prev)/prev;
+  if (d <= 0) return 'ok'; if (d <= 0.05) return 'warn'; return 'danger';
+}
+function badgeHtml(st) {
+  const map = {ok:'<span class="badge badge-ok">Dentro</span>',warn:'<span class="badge badge-warn">Atenção</span>',danger:'<span class="badge badge-danger">Excedido</span>'};
+  return map[st] || '<span class="badge badge-neutral">Sem dados</span>';
+}
+
+function calcPrevistoDia(dw) {
+  const nome = DIAS_SEMANA[dw], cfg = state.config;
+  const total = cfg.adm1+cfg.adm2+cfg.analistas+cfg.roadshow+cfg.supervisor;
+  const du = getDiasUteis();
+  const n = getDiasAbril().filter(x => du.includes(x.d) && x.dw === dw).length;
+  if (!n) return {custo:0,transp:0,frete_pct:0};
+  const p = PCT_TRANSP[nome]||0, pc = PCT_COMERC[nome]||0;
+  const custo = (total*p)/n, transp = (cfg.faturamento*pc)/n;
+  return {custo, transp, frete_pct: transp>0 ? custo/transp : 0};
+}
+function calcContas(dw, n) {
+  const cfg = state.config, nome = DIAS_SEMANA[dw], p = PCT_TRANSP[nome]||0;
+  if (!n) return {Adm:0,Analistas:0,Roadshow:0,Supervisor:0};
+  return {Adm:((cfg.adm1+cfg.adm2)*p)/n, Analistas:(cfg.analistas*p)/n, Roadshow:(cfg.roadshow*p)/n, Supervisor:(cfg.supervisor*p)/n};
+}
+function calcPrevAcumulado() {
+  const du = getDiasUteis(), hoje = new Date();
+  const hojeD = (hoje.getMonth()===3 && hoje.getFullYear()===2026) ? hoje.getDate() : 30;
+  let sum = 0;
+  getDiasAbril().forEach(({d,dw}) => { if (!du.includes(d)||d>hojeD) return; sum += calcPrevistoDia(dw).custo; });
+  return sum;
+}
+
+function renderKPIs() {
+  const cfg = state.config;
+  const totalPrev = cfg.adm1+cfg.adm2+cfg.analistas+cfg.roadshow+cfg.supervisor;
+  document.getElementById('kpi-prev').textContent = fmt(totalPrev);
+  document.getElementById('kpi-pct-prev').textContent = cfg.faturamento ? fmtPct(totalPrev/cfg.faturamento) : '—';
+  document.getElementById('kpi-transp-prev').textContent = cfg.faturamento ? fmt(cfg.faturamento) : '—';
+  let totalReal=0, totalTransp=0, count=0;
+  getDiasAbril().forEach(({d}) => {
+    const dd = state.dias[d];
+    if (dd && dd.custo_real) { totalReal += dd.custo_real; count++; }
+    if (dd && dd.transp_real) totalTransp += dd.transp_real;
+  });
+  const prevAcum = calcPrevAcumulado();
+  const elReal = document.getElementById('kpi-real'), subReal = document.getElementById('kpi-real-sub');
+  elReal.textContent = count ? fmt(totalReal) : 'Sem dados';
+  if (count) {
+    const diff = totalReal-prevAcum, cls = diff<=0?'ok':diff/prevAcum<=.05?'warn':'danger';
+    subReal.className='metric-sub '+cls; subReal.textContent=(diff>=0?'+':'')+fmt(diff)+' vs previsto acum.';
+  } else { subReal.textContent='—'; subReal.className='metric-sub neutral'; }
+  const kpiT=document.getElementById('kpi-transp'), subT=document.getElementById('kpi-transp-sub');
+  if (totalTransp) {
+    kpiT.textContent=fmt(totalTransp);
+    const dT=totalTransp-cfg.faturamento, clsT=dT>=0?'ok':'danger';
+    kpiT.className='metric-value '+clsT; subT.className='metric-sub '+clsT;
+    subT.textContent=(dT>=0?'+':'')+fmt(dT)+' vs previsto';
+  } else { kpiT.textContent='—'; kpiT.className='metric-value'; subT.textContent='sem dados'; subT.className='metric-sub neutral'; }
+  const comDados = getDiasAbril().filter(({d}) => state.dias[d] && state.dias[d].custo_real).map(({d})=>d);
+  const kpiDia=document.getElementById('kpi-dia-real'), subDia=document.getElementById('kpi-dia-real-sub');
+  if (comDados.length) {
+    const ult=comDados[comDados.length-1], dd=state.dias[ult], dw=new Date(2026,3,ult).getDay();
+    const prev=calcPrevistoDia(dw), st=status(dd.custo_real,prev.custo);
+    kpiDia.textContent=fmt(dd.custo_real); kpiDia.className='metric-value '+st;
+    subDia.textContent='dia '+String(ult).padStart(2,'0')+'/04 · prev: '+fmt(prev.custo); subDia.className='metric-sub '+st;
+  } else { kpiDia.textContent='—'; kpiDia.className='metric-value'; subDia.textContent='nenhum dia lançado'; subDia.className='metric-sub neutral'; }
+  const kpiPct=document.getElementById('kpi-pct-real'), subPct=document.getElementById('kpi-pct-sub');
+  if (count && totalTransp) {
+    const pct=totalReal/totalTransp, prevPct=totalPrev/cfg.faturamento;
+    kpiPct.textContent=fmtPct(pct);
+    const cls=pct<=prevPct?'ok':pct<=prevPct*1.05?'warn':'danger';
+    kpiPct.className='metric-value '+cls; subPct.className='metric-sub '+cls;
+    subPct.textContent=(pct>prevPct?'+':'')+fmtPct(pct-prevPct)+' vs meta';
+  } else { kpiPct.textContent='—'; kpiPct.className='metric-value'; subPct.textContent='—'; subPct.className='metric-sub neutral'; }
+}
+
+function renderDayGrid() {
+  const grid=document.getElementById('day-grid'), du=getDiasUteis();
+  const hoje=new Date(), hojeD=(hoje.getMonth()===3&&hoje.getFullYear()===2026)?hoje.getDate():0;
+  grid.innerHTML='';
+  getDiasAbril().forEach(({d,dw,nome}) => {
+    if (dw===0) return;
+    const isUtil=du.includes(d), dd=state.dias[d], prev=calcPrevistoDia(dw);
+    let st='neutral', hasData=false;
+    if (dd && dd.custo_real) { hasData=true; st=status(dd.custo_real,prev.custo); }
+    const card=document.createElement('div');
+    card.className='day-card'+(d===hojeD?' today':'')+(hasData?' has-data '+st:'');
+    card.innerHTML='<div style="font-size:10px;color:#888780">'+nome+'</div>'
+      +'<div style="font-size:13px;font-weight:500">'+String(d).padStart(2,'0')+'/04</div>'
+      +'<div style="font-size:10px;margin-top:2px">'+(hasData?badgeHtml(st):'<span style="color:#888780">'+(isUtil?'a lançar':'feriado')+'</span>')+'</div>';
+    if (isUtil) card.onclick=()=>selectDay(d,dw,nome);
+    else { card.style.opacity='0.4'; card.style.cursor='default'; }
+    grid.appendChild(card);
+  });
+}
+
+function selectDay(d,dw,nome) {
+  selectedDay={d,dw,nome};
+  const du=getDiasUteis(), n=getDiasAbril().filter(x=>du.includes(x.d)&&x.dw===dw).length;
+  const prev=calcPrevistoDia(dw), cp=calcContas(dw,n), dd=state.dias[d]||{};
+  document.getElementById('form-title').textContent='Lançamento — '+String(d).padStart(2,'0')+'/04/2026';
+  document.getElementById('form-dia').textContent=nome;
+  document.getElementById('btn-salvar').style.display='';
+  let html='<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1rem">'
+    +'<div class="metric-card"><div class="metric-label">Custo previsto dia</div><div class="metric-value" style="font-size:15px">'+fmt(prev.custo)+'</div></div>'
+    +'<div class="metric-card"><div class="metric-label">Transportado previsto</div><div class="metric-value" style="font-size:15px">'+fmt(prev.transp)+'</div></div>'
+    +'<div class="metric-card"><div class="metric-label">% Frete previsto</div><div class="metric-value" style="font-size:15px">'+fmtPct(prev.frete_pct)+'</div></div>'
+    +'</div><div style="font-size:13px;font-weight:500;margin-bottom:.75rem">Realizados do dia</div><div class="form-row">';
+  CONTAS.forEach(c => {
+    const val=dd['conta_'+c]?formatBRL(dd['conta_'+c]):'';
+    html+='<div class="form-group"><label class="form-label">'+c+' <span class="neutral">(prev: '+fmt(cp[c])+')</span></label>'
+      +'<div class="currency-input-wrap"><span class="currency-prefix">R$</span>'
+      +'<input class="currency-input" id="inp-'+c+'" value="'+val+'" placeholder="0,00" autocomplete="off"></div></div>';
+  });
+  const tv=dd.transp_real?formatBRL(dd.transp_real):'';
+  html+='</div><div class="form-row">'
+    +'<div class="form-group"><label class="form-label">Valor transportado (R$)</label>'
+    +'<div class="currency-input-wrap"><span class="currency-prefix">R$</span>'
+    +'<input class="currency-input" id="inp-transp" value="'+tv+'" placeholder="0,00" autocomplete="off"></div></div>'
+    +'<div class="form-group"><label class="form-label">Observação do dia</label>'
+    +'<input class="plain-input" type="text" id="inp-obs" value="'+(dd.obs||'')+'" placeholder="Ex: feriado, pico de volume..."></div></div>';
+  if (dd && dd.custo_real) {
+    const diff=dd.custo_real-prev.custo, st=status(dd.custo_real,prev.custo);
+    const cls=st==='ok'?'alert-success':st==='warn'?'alert-warn':'alert-danger';
+    html+='<div class="alert-box '+cls+'">Realizado: '+fmt(dd.custo_real)+' &nbsp;·&nbsp; Diferença: '+(diff>=0?'+':'')+fmt(diff)+' &nbsp;·&nbsp; % Frete: '+fmtPct(dd.frete_pct_real||0)+'</div>';
+  }
+  document.getElementById('form-body').innerHTML=html;
+  ['Adm','Analistas','Roadshow','Supervisor','transp'].forEach(id=>{const el=document.getElementById('inp-'+id);if(el)maskBRL(el);});
+}
+
+function salvarDia() {
+  if (!selectedDay) return;
+  const {d,dw}=selectedDay; let custo=0;
+  const obj={obs:document.getElementById('inp-obs')?.value||''};
+  CONTAS.forEach(c=>{const v=parseBRL(document.getElementById('inp-'+c)?.value);obj['conta_'+c]=v;custo+=v;});
+  const transp=parseBRL(document.getElementById('inp-transp')?.value);
+  obj.custo_real=custo; obj.transp_real=transp; obj.frete_pct_real=transp>0?custo/transp:0;
+  state.dias[d]=obj; saveState(); renderAll(); selectDay(d,dw,selectedDay.nome);
+}
+
+/* ─── GRÁFICOS SVG ─── */
+function setFiltro(f,btn) {
+  filtroAtivo=f;
+  document.querySelectorAll('.filtro-bar .btn').forEach(b=>b.classList.remove('btn-primary'));
+  btn.classList.add('btn-primary');
+  renderEvolucao();
+}
+
+function svgBarChart(containerId, labels, series, yFmt, height) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const W = el.offsetWidth || 900;
+  const H = height || 280;
+  const pad = {top:40, right:20, bottom:50, left:70};
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const n = labels.length;
+  const groupW = chartW / n;
+  const barW = Math.min(groupW * 0.35, 28);
+  const colors = [
+    {fill:'rgba(55,138,221,0.25)',stroke:'#378ADD'},
+    {fill:'rgba(30,158,117,0.85)',stroke:'#1D9E75'},
+    {fill:'rgba(127,119,221,0.25)',stroke:'#7F77DD'},
+    {fill:'rgba(83,74,183,0.85)',stroke:'#534AB7'}
+  ];
+  // calc max
+  let maxVal = 0;
+  series.forEach(s => s.data.forEach(v => { if (v !== null && v > maxVal) maxVal = v; }));
+  if (maxVal === 0) maxVal = 1;
+  maxVal = maxVal * 1.15;
+
+  function yScale(v) { return chartH - (v / maxVal) * chartH; }
+  function xCenter(i) { return pad.left + i * groupW + groupW / 2; }
+
+  // Y axis ticks
+  const ticks = 5;
+  let yTicks = '';
+  for (let i = 0; i <= ticks; i++) {
+    const val = (maxVal / ticks) * i;
+    const y = pad.top + chartH - (val / maxVal) * chartH;
+    yTicks += `<line x1="${pad.left}" y1="${y}" x2="${pad.left + chartW}" y2="${y}" stroke="rgba(128,128,128,0.12)" stroke-width="1"/>`;
+    yTicks += `<text x="${pad.left - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="#888780">${yFmt(val)}</text>`;
+  }
+
+  // Bars
+  let bars = '';
+  const nSeries = series.length;
+  series.forEach((s, si) => {
+    const offsetX = (si - (nSeries-1)/2) * (barW + 2);
+    s.data.forEach((v, i) => {
+      if (v === null) return;
+      const x = xCenter(i) + offsetX - barW/2;
+      const bH = (v / maxVal) * chartH;
+      const y = pad.top + chartH - bH;
+      bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW}" height="${bH.toFixed(1)}" rx="3" fill="${colors[si].fill}" stroke="${colors[si].stroke}" stroke-width="1.5"/>`;
+      // label
+      const lbl = yFmt(v);
+      bars += `<text x="${(x + barW/2).toFixed(1)}" y="${(y - 5).toFixed(1)}" text-anchor="middle" font-size="9" fill="#444441" font-weight="500">${lbl}</text>`;
+    });
+  });
+
+  // X labels
+  let xLabels = '';
+  const skip = n > 15 ? 2 : 1;
+  labels.forEach((lbl, i) => {
+    if (i % skip !== 0) return;
+    const x = xCenter(i);
+    const y = pad.top + chartH + 16;
+    xLabels += `<text x="${x}" y="${y}" text-anchor="middle" font-size="10" fill="#888780" transform="rotate(-35,${x},${y})">${lbl}</text>`;
+  });
+
+  el.innerHTML = `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block">
+    <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${pad.top+chartH}" stroke="#d3d1c7" stroke-width="1"/>
+    <line x1="${pad.left}" y1="${pad.top+chartH}" x2="${pad.left+chartW}" y2="${pad.top+chartH}" stroke="#d3d1c7" stroke-width="1"/>
+    ${yTicks}${bars}${xLabels}
+  </svg>`;
+}
+
+function svgLineChart(containerId, labels, series, yFmt, height) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const W = el.offsetWidth || 900;
+  const H = height || 240;
+  const pad = {top:40, right:20, bottom:50, left:70};
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const n = labels.length;
+  const colors = ['#378ADD','#1D9E75'];
+  const dashes = ['6,3','0'];
+
+  let allVals = [];
+  series.forEach(s => s.data.forEach(v => { if (v !== null) allVals.push(v); }));
+  let minVal = Math.min(...allVals) * 0.9;
+  let maxVal = Math.max(...allVals) * 1.1;
+  if (!allVals.length) { minVal = 0; maxVal = 10; }
+  if (minVal === maxVal) { minVal -= 1; maxVal += 1; }
+
+  function yScale(v) { return pad.top + chartH - ((v - minVal) / (maxVal - minVal)) * chartH; }
+  function xScale(i) { return pad.left + (i / Math.max(n-1,1)) * chartW; }
+
+  // Y ticks
+  const ticks = 5;
+  let yTicks = '';
+  for (let i = 0; i <= ticks; i++) {
+    const val = minVal + ((maxVal - minVal) / ticks) * i;
+    const y = yScale(val);
+    yTicks += `<line x1="${pad.left}" y1="${y.toFixed(1)}" x2="${pad.left+chartW}" y2="${y.toFixed(1)}" stroke="rgba(128,128,128,0.12)" stroke-width="1"/>`;
+    yTicks += `<text x="${pad.left-6}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="10" fill="#888780">${yFmt(val)}</text>`;
+  }
+
+  // Lines and points
+  let lines = '';
+  series.forEach((s, si) => {
+    const pts = s.data.map((v,i) => v !== null ? {x: xScale(i), y: yScale(v), v} : null);
+    // draw segments between non-null
+    let path = '';
+    let prev = null;
+    pts.forEach(p => {
+      if (!p) { prev = null; return; }
+      if (!prev) path += `M${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+      else path += ` L${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+      prev = p;
+    });
+    if (path) lines += `<path d="${path}" fill="none" stroke="${colors[si]}" stroke-width="2" stroke-dasharray="${dashes[si]}"/>`;
+    // points and labels
+    pts.forEach(p => {
+      if (!p) return;
+      lines += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="${colors[si]}" stroke="#fff" stroke-width="1.5"/>`;
+      lines += `<text x="${p.x.toFixed(1)}" y="${(p.y-8).toFixed(1)}" text-anchor="middle" font-size="9" fill="#444441" font-weight="500">${yFmt(p.v)}</text>`;
+    });
+  });
+
+  // X labels
+  const skip = n > 15 ? 2 : 1;
+  let xLabels = '';
+  labels.forEach((lbl,i) => {
+    if (i % skip !== 0) return;
+    const x = xScale(i);
+    const y = pad.top + chartH + 16;
+    xLabels += `<text x="${x.toFixed(1)}" y="${y}" text-anchor="middle" font-size="10" fill="#888780" transform="rotate(-35,${x.toFixed(1)},${y})">${lbl}</text>`;
+  });
+
+  el.innerHTML = `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block">
+    <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${pad.top+chartH}" stroke="#d3d1c7" stroke-width="1"/>
+    <line x1="${pad.left}" y1="${pad.top+chartH}" x2="${pad.left+chartW}" y2="${pad.top+chartH}" stroke="#d3d1c7" stroke-width="1"/>
+    ${yTicks}${lines}${xLabels}
+  </svg>`;
+}
+
+function getChartData() {
+  const du=getDiasUteis(), todos=getDiasAbril().filter(x=>du.includes(x.d));
+  if (filtroAtivo==='diario') {
+    const labels=[],cprev=[],creal=[],tprev=[],treal=[],pprev=[],preal=[];
+    todos.forEach(({d,dw})=>{
+      const prev=calcPrevistoDia(dw), dd=state.dias[d];
+      labels.push(String(d).padStart(2,'0')+'/04');
+      cprev.push(Math.round(prev.custo)); creal.push(dd&&dd.custo_real?Math.round(dd.custo_real):null);
+      tprev.push(Math.round(prev.transp)); treal.push(dd&&dd.transp_real?Math.round(dd.transp_real):null);
+      pprev.push(parseFloat((prev.frete_pct*100).toFixed(2)));
+      preal.push(dd&&dd.frete_pct_real?parseFloat((dd.frete_pct_real*100).toFixed(2)):null);
+    });
+    return {labels,cprev,creal,tprev,treal,pprev,preal};
+  }
+  let blocos=[];
+  if (filtroAtivo==='semanal') {
+    [[1,5],[6,12],[13,19],[20,26],[27,30]].forEach(([a,b],i)=>{
+      const ds=todos.filter(x=>x.d>=a&&x.d<=b);
+      if(ds.length) blocos.push({label:(i+1)+'ª sem',dias:ds});
+    });
+  } else if (filtroAtivo==='quinzenal') {
+    [[1,15],[16,30]].forEach(([a,b],i)=>{
+      const ds=todos.filter(x=>x.d>=a&&x.d<=b);
+      if(ds.length) blocos.push({label:(i+1)+'ª quinzena',dias:ds});
+    });
+  } else { blocos.push({label:'Abril 2026',dias:todos}); }
+  const labels=[],cprev=[],creal=[],tprev=[],treal=[],pprev=[],preal=[];
+  blocos.forEach(({label,dias})=>{
+    let sp=0,sr=0,tp=0,tr=0,hr=false,ht=false;
+    dias.forEach(({d,dw})=>{
+      const prev=calcPrevistoDia(dw), dd=state.dias[d];
+      sp+=prev.custo; tp+=prev.transp;
+      if(dd&&dd.custo_real){sr+=dd.custo_real;hr=true;}
+      if(dd&&dd.transp_real){tr+=dd.transp_real;ht=true;}
+    });
+    labels.push(label);
+    cprev.push(Math.round(sp)); creal.push(hr?Math.round(sr):null);
+    tprev.push(Math.round(tp)); treal.push(ht?Math.round(tr):null);
+    pprev.push(tp>0?parseFloat((sp/tp*100).toFixed(2)):null);
+    preal.push(hr&&ht&&tr>0?parseFloat((sr/tr*100).toFixed(2)):null);
+  });
+  return {labels,cprev,creal,tprev,treal,pprev,preal};
+}
+
+function buildChart(id, type, labels, datasets, yFmt, dlFmt) {
+  const el=document.getElementById(id); if(!el) return;
+  const existing=Chart.getChart(el); if(existing) existing.destroy();
+  return new Chart(el,{
+    type,
+    data:{labels,datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      layout:{padding:{top:32}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+(ctx.parsed.y!==null?dlFmt(ctx.parsed.y):'—')}},
+        datalabels:{
+          display:ctx=>ctx.parsed.y!==null&&ctx.parsed.y!==undefined,
+          anchor:'end', align:'top',
+          font:{size:10,weight:'500'},
+          color:'#444441',
+          padding:{bottom:4},
+          formatter:v=>(v===null||v===undefined)?'':dlFmt(v)
+        }
+      },
+      scales:{
+        y:{beginAtZero:true, ticks:{callback:yFmt,font:{size:11}}, grid:{color:'rgba(128,128,128,0.08)'}},
+        x:{ticks:{autoSkip:false,maxRotation:filtroAtivo==='diario'?45:0,font:{size:11}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function renderEvolucao() {
+  const {labels,cprev,creal,tprev,treal,pprev,preal}=getChartData();
+  svgBarChart('chart-custo', labels,
+    [{label:'Previsto',data:cprev},{label:'Realizado',data:creal}],
+    v=>fmtK(v), 280);
+  svgBarChart('chart-transp', labels,
+    [{label:'Previsto',data:tprev},{label:'Realizado',data:treal}],
+    v=>fmtK(v), 260);
+  svgLineChart('chart-pct', labels,
+    [{label:'Previsto %',data:pprev},{label:'Realizado %',data:preal}],
+    v=>v.toFixed(2).replace('.',',')+' %', 240);
+}
+
+/* ─── SEMANAL ─── */
+function renderSemanal() {
+  const du=getDiasUteis(), dias=getDiasAbril();
+  const semanas=[
+    {label:'1ª Semana',dias:dias.filter(x=>du.includes(x.d)&&x.d<=5)},
+    {label:'2ª Semana',dias:dias.filter(x=>du.includes(x.d)&&x.d>=6&&x.d<=12)},
+    {label:'3ª Semana',dias:dias.filter(x=>du.includes(x.d)&&x.d>=13&&x.d<=19)},
+    {label:'4ª Semana',dias:dias.filter(x=>du.includes(x.d)&&x.d>=20&&x.d<=26)},
+    {label:'5ª Semana',dias:dias.filter(x=>du.includes(x.d)&&x.d>=27)}
+  ];
+  const tbody=document.getElementById('tbody-semanal'); tbody.innerHTML='';
+  semanas.forEach(({label,dias})=>{
+    if(!dias.length) return;
+    let sp=0,sr=0,tp=0,tr=0,hC=false,hT=false;
+    dias.forEach(({d,dw})=>{
+      const prev=calcPrevistoDia(dw), dd=state.dias[d];
+      sp+=prev.custo; tp+=prev.transp;
+      if(dd&&dd.custo_real){sr+=dd.custo_real;hC=true;}
+      if(dd&&dd.transp_real){tr+=dd.transp_real;hT=true;}
+    });
+    const per=String(dias[0].d).padStart(2,'0')+' a '+String(dias[dias.length-1].d).padStart(2,'0')+'/04';
+    const st=hC?status(sr,sp):'neutral', dC=sr-sp;
+    const pPrev=tp>0?sp/tp:0, pReal=(hC&&hT&&tr>0)?sr/tr:null;
+    const pCls=pReal!==null?(pReal<=pPrev?'ok':pReal<=pPrev*1.05?'warn':'danger'):'neutral';
+    tbody.innerHTML+='<tr class="week-row">'
+      +'<td style="font-weight:500">'+label+'</td>'
+      +'<td style="color:#888780;font-size:12px">'+per+'</td>'
+      +'<td class="right">'+fmt(sp)+'</td>'
+      +'<td class="right">'+(hC?fmt(sr):'—')+'</td>'
+      +'<td class="right '+(hC?(dC<=0?'ok':dC/sp<=.05?'warn':'danger'):'neutral')+'">'+(hC?(dC>=0?'+':'')+fmt(dC):'—')+'</td>'
+      +'<td class="right">'+fmt(tp)+'</td>'
+      +'<td class="right">'+(hT?fmt(tr):'—')+'</td>'
+      +'<td class="right neutral">'+fmtPct(pPrev)+'</td>'
+      +'<td class="right '+pCls+'">'+(pReal!==null?fmtPct(pReal):'—')+'</td>'
+      +'<td>'+badgeHtml(st)+'</td></tr>';
+  });
+  const tbc=document.getElementById('tbody-contas'); tbc.innerHTML='';
+  const cfg=state.config, tm={Adm:cfg.adm1+cfg.adm2,Analistas:cfg.analistas,Roadshow:cfg.roadshow,Supervisor:cfg.supervisor};
+  CONTAS.forEach(c=>{
+    let real=0,has=false;
+    getDiasAbril().forEach(({d})=>{const dd=state.dias[d];if(dd&&dd['conta_'+c]){real+=dd['conta_'+c];has=true;}});
+    const prev=tm[c],saldo=prev-real,st=has?status(real,prev):'neutral';
+    tbc.innerHTML+='<tr><td style="font-weight:500">'+c+'</td><td class="right">'+fmt(prev)+'</td><td class="right">'+(has?fmt(real):'—')+'</td><td class="right '+(saldo>=0?'ok':'danger')+'">'+(has?(saldo>=0?'+':'')+fmt(saldo):'—')+'</td><td>'+badgeHtml(st)+'</td></tr>';
+  });
+}
+
+function renderAll() { renderKPIs(); renderDayGrid(); renderSemanal(); }
+
+/* ─── NAVEGAÇÃO ─── */
+function switchTab(name) {
+  abaAtiva = name;
+  ['lancamento','evolucao','semanal'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    const btn=document.getElementById('btn-tab-'+t.substring(0,4));
+    if(el) el.className='tab-content'+(t===name?'':' hidden');
+    if(btn) btn.classList.toggle('active',t===name);
+  });
+  if (name==='evolucao') renderEvolucao();
+}
+
+function showTab(name) {
+  document.getElementById('painel-geral').style.display=name==='geral'?'':'none';
+  document.getElementById('tab-config').style.display=name==='config'?'':'none';
+  document.getElementById('tab-resumo').style.display=name==='resumo'?'':'none';
+  if(name==='config') renderConfigForm();
+  if(name==='geral' && abaAtiva==='evolucao') setTimeout(renderEvolucao, 50);
+}
+
+/* ─── CONFIG ─── */
+function renderConfigForm() {
+  const cfg=state.config;
+  const map={adm1:cfg.adm1,adm2:cfg.adm2,analistas:cfg.analistas,roadshow:cfg.roadshow,supervisor:cfg.supervisor,faturamento:cfg.faturamento};
+  Object.entries(map).forEach(([k,v])=>{const el=document.getElementById('cfg-'+k);if(el){el.value=v?formatBRL(v):'';maskBRL(el);}});
+  const cont=document.getElementById('cfg-dias'), du=getDiasUteis(); cont.innerHTML='';
+  getDiasAbril().forEach(({d,dw,nome})=>{
+    if(dw===0) return;
+    const isUtil=du.includes(d), btn=document.createElement('button');
+    btn.className='btn'+(isUtil?' btn-primary':'');
+    btn.textContent=nome+' '+String(d).padStart(2,'0');
+    btn.style.cssText='font-size:12px;padding:4px 10px';
+    btn.onclick=()=>{
+      let cur=getDiasUteis();
+      if(isUtil) cur=cur.filter(x=>x!==d); else {if(!cur.includes(d))cur.push(d);cur.sort((a,b)=>a-b);}
+      state.config.diasUteis=cur; saveState(); renderConfigForm();
+    };
+    cont.appendChild(btn);
+  });
+}
+function salvarConfig() {
+  ['adm1','adm2','analistas','roadshow','supervisor','faturamento'].forEach(k=>{
+    const el=document.getElementById('cfg-'+k); if(el) state.config[k]=parseBRL(el.value);
+  });
+  saveState(); showTab('geral'); renderAll();
+}
+function limparDados() {
+  if(!confirm('Confirma limpeza de todos os dados lançados? As metas serão mantidas.')) return;
+  state.dias={}; saveState(); showTab('geral'); renderAll();
+}
+
+/* ─── RESUMO ─── */
+function gerarResumo() {
+  const cfg=state.config, totalPrev=cfg.adm1+cfg.adm2+cfg.analistas+cfg.roadshow+cfg.supervisor;
+  let totalReal=0,totalTransp=0,countDias=0;
+  getDiasAbril().forEach(({d})=>{const dd=state.dias[d];if(dd&&dd.custo_real){totalReal+=dd.custo_real;totalTransp+=dd.transp_real||0;countDias++;}});
+  const prevAcum=calcPrevAcumulado(), diff=totalReal-prevAcum;
+  const pctReal=totalTransp?totalReal/totalTransp:0, pctPrev=cfg.faturamento?totalPrev/cfg.faturamento:0;
+  const data=new Date().toLocaleDateString('pt-BR');
+  let txt='📊 *CONTROLE CUSTO FRETE — ABRIL 2026*\n_Vettore Logística · '+data+'_\n\n';
+  txt+='━━━━━━━━━━━━━━━━━━━━\n💰 *RESUMO ACUMULADO ('+countDias+' dias)*\n';
+  txt+='• Previsto acumulado: '+fmt(prevAcum)+'\n• Realizado: '+fmt(totalReal)+'\n';
+  txt+='• Diferença: '+(diff>=0?'▲':'▼')+' '+fmt(Math.abs(diff))+' ('+(diff>=0?'+':'')+fmtPct(prevAcum?diff/prevAcum:0)+')\n\n';
+  txt+='🚚 *TRANSPORTADO*\n• Previsto: '+fmt(cfg.faturamento)+'\n• Realizado: '+(countDias?fmt(totalTransp):'sem dados')+'\n\n';
+  txt+='📈 *% CUSTO FRETE*\n• Meta mês: '+fmtPct(pctPrev)+'\n• Realizado: '+(countDias?fmtPct(pctReal):'sem dados')+'\n\n';
+  txt+='💼 *POR CONTA*\n';
+  const tm={Adm:cfg.adm1+cfg.adm2,Analistas:cfg.analistas,Roadshow:cfg.roadshow,Supervisor:cfg.supervisor};
+  CONTAS.forEach(c=>{
+    let real=0,has=false;
+    getDiasAbril().forEach(({d})=>{const dd=state.dias[d];if(dd&&dd['conta_'+c]){real+=dd['conta_'+c];has=true;}});
+    const prev=tm[c], icon=!has?'⭕':real<=prev?'✅':real<=prev*1.05?'⚠️':'🔴';
+    txt+='• '+icon+' '+c+': '+(has?fmt(real):'—')+' / '+fmt(prev)+'\n';
+  });
+  txt+='\n━━━━━━━━━━━━━━━━━━━━\n_Gerado pelo Painel Executivo Vettore_';
+  document.getElementById('resumo-texto').textContent=txt;
+  showTab('resumo');
+}
+function copiarResumo() {
+  navigator.clipboard.writeText(document.getElementById('resumo-texto').textContent).then(()=>{
+    const btn=document.querySelector('#tab-resumo .btn-success'), orig=btn.textContent;
+    btn.textContent='Copiado!'; setTimeout(()=>btn.textContent=orig,2000);
+  });
+}
+
+// Inicializa
+renderAll();
+// Pré-renderiza os gráficos em background para garantir dimensões
+setTimeout(renderEvolucao, 300);
+</script>
+</body>
+</html>
