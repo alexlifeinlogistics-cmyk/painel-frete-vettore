@@ -92,6 +92,82 @@ td.right,th.right{text-align:right}
     <div class="metric-card"><div class="metric-label">% Custo Frete realizado</div><div class="metric-value" id="kpi-pct-real">—</div><div class="metric-sub neutral" id="kpi-pct-sub">—</div></div>
   </div>
 
+  <!-- TENDÊNCIA -->
+  <div class="section" id="bloco-tendencia">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <div style="font-size:14px;font-weight:500;color:#1a1a18">Tendência e projeção de fechamento</div>
+      <div style="font-size:12px;color:#888780" id="tend-referencia">—</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+
+      <!-- TRANSPORTADO -->
+      <div style="background:#f4f4f0;border-radius:10px;padding:1rem">
+        <div style="font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem">Valor transportado</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:.75rem">
+          <div><div style="font-size:10px;color:#888780">Meta mês</div><div style="font-size:14px;font-weight:500" id="tt-meta">—</div></div>
+          <div><div style="font-size:10px;color:#888780">Meta prevista acum.</div><div style="font-size:14px;font-weight:500" id="tt-prop">—</div></div>
+          <div><div style="font-size:10px;color:#888780">Realizado até hoje</div><div style="font-size:14px;font-weight:500" id="tt-real">—</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:.75rem">
+          <div><div style="font-size:10px;color:#888780">Resultado vs meta prop.</div><div style="font-size:16px;font-weight:500" id="tt-gap">—</div></div>
+          <div><div style="font-size:10px;color:#888780">Projeção fechamento</div><div style="font-size:16px;font-weight:500" id="tt-proj">—</div></div>
+        </div>
+        <div id="tt-tend-box" style="border-radius:8px;padding:.6rem .75rem;display:flex;align-items:center;justify-content:space-between;background:#f4f4f0">
+          <div style="font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.04em">Tendência</div>
+          <div style="font-size:13px;font-weight:500" id="tt-tend">—</div>
+        </div>
+        <!-- barra de progresso -->
+        <div style="margin-top:.75rem">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#888780;margin-bottom:3px">
+            <span>0%</span><span id="tt-pct-label">—</span><span>100%</span>
+          </div>
+          <div style="background:#e8e8e4;border-radius:4px;height:8px;overflow:hidden;position:relative">
+            <div id="tt-bar-meta" style="position:absolute;top:0;bottom:0;background:rgba(55,138,221,0.3);border-radius:4px;transition:width .5s"></div>
+            <div id="tt-bar-real" style="position:absolute;top:0;bottom:0;background:#1D9E75;border-radius:4px;transition:width .5s"></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:4px;font-size:10px;color:#888780">
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:6px;background:rgba(55,138,221,0.3);border-radius:2px;display:inline-block"></span>Meta prevista acum.</span>
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:6px;background:#1D9E75;border-radius:2px;display:inline-block"></span>Realizado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CUSTO -->
+      <div style="background:#f4f4f0;border-radius:10px;padding:1rem">
+        <div style="font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem">Custo de frete</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:.75rem">
+          <div><div style="font-size:10px;color:#888780">Orçamento mês</div><div style="font-size:14px;font-weight:500" id="tc-meta">—</div></div>
+          <div><div style="font-size:10px;color:#888780">Orçamento previsto acum.</div><div style="font-size:14px;font-weight:500" id="tc-prop">—</div></div>
+          <div><div style="font-size:10px;color:#888780">Realizado até hoje</div><div style="font-size:14px;font-weight:500" id="tc-real">—</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:.75rem">
+          <div><div style="font-size:10px;color:#888780">Resultado vs orçamento prop.</div><div style="font-size:16px;font-weight:500" id="tc-gap">—</div></div>
+          <div><div style="font-size:10px;color:#888780">Projeção fechamento</div><div style="font-size:16px;font-weight:500" id="tc-proj">—</div></div>
+        </div>
+        <div id="tc-tend-box" style="border-radius:8px;padding:.6rem .75rem;display:flex;align-items:center;justify-content:space-between;background:#f4f4f0">
+          <div style="font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.04em">Tendência</div>
+          <div style="font-size:13px;font-weight:500" id="tc-tend">—</div>
+        </div>
+        <!-- barra de progresso -->
+        <div style="margin-top:.75rem">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:#888780;margin-bottom:3px">
+            <span>0%</span><span id="tc-pct-label">—</span><span>100%</span>
+          </div>
+          <div style="background:#e8e8e4;border-radius:4px;height:8px;overflow:hidden;position:relative">
+            <div id="tc-bar-meta" style="position:absolute;top:0;bottom:0;background:rgba(55,138,221,0.3);border-radius:4px;transition:width .5s"></div>
+            <div id="tc-bar-real" style="position:absolute;top:0;bottom:0;border-radius:4px;transition:width .5s" id="tc-bar-real"></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:4px;font-size:10px;color:#888780">
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:6px;background:rgba(55,138,221,0.3);border-radius:2px;display:inline-block"></span>Orç. previsto acum.</span>
+            <span style="display:flex;align-items:center;gap:3px"><span id="tc-leg-box" style="width:10px;height:6px;border-radius:2px;display:inline-block;background:#1D9E75"></span>Realizado</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="tab-bar">
     <button class="tab active" id="btn-tab-lanc" onclick="switchTab('lancamento')">Lançamento diário</button>
     <button class="tab" id="btn-tab-evol" onclick="switchTab('evolucao')">Evolução</button>
@@ -246,7 +322,7 @@ function getDiasAbril() {
 }
 function getDiasUteis() {
   if (state.config.diasUteis && state.config.diasUteis.length) return state.config.diasUteis;
-  const feriados = [5, 21];
+  const feriados = [3, 5, 21];  // 03/04 Sexta-feira Santa, 05/04 sáb, 21/04 Tiradentes
   return getDiasAbril().filter(x => x.dw >= 1 && x.dw <= 6 && !feriados.includes(x.d)).map(x => x.d);
 }
 
@@ -317,7 +393,7 @@ function renderKPIs() {
     if (dd && dd.custo_real) { totalReal += dd.custo_real; count++; }
     if (dd && dd.transp_real) totalTransp += dd.transp_real;
   });
-  const prevAcum = calcPrevAcumulado();
+  const prevAcum = calcPrevAcumulado(); // usado nos KPIs do painel principal
   const elReal = document.getElementById('kpi-real'), subReal = document.getElementById('kpi-real-sub');
   elReal.textContent = count ? fmt(totalReal) : 'Sem dados';
   if (count) {
@@ -694,7 +770,131 @@ function renderSemanal() {
   });
 }
 
-function renderAll() { renderKPIs(); renderDayGrid(); renderSemanal(); }
+function renderTendencia() {
+  const cfg = state.config;
+  const du = getDiasUteis();
+  const todosOsDias = getDiasAbril();
+  const totalDiasUteis = du.length;
+  const hoje = new Date();
+  const hojeD = (hoje.getMonth()===3 && hoje.getFullYear()===2026) ? hoje.getDate() : 10;
+
+  // Dias úteis até hoje
+  const diasUteiAteHoje = du.filter(d => d <= hojeD);
+  const nAteHoje = diasUteiAteHoje.length;
+  const proporcao = totalDiasUteis > 0 ? nAteHoje / totalDiasUteis : 0;
+
+  // Metas mensais
+  const metaTransp = cfg.faturamento || 0;
+  const metaCusto = cfg.adm1+cfg.adm2+cfg.analistas+cfg.roadshow+cfg.supervisor;
+
+  // Metas proporcionais usando percentuais históricos por dia da semana
+  // (mesmo cálculo da planilha Excel — não é divisão simples por dias úteis)
+  let metaCustoProp = 0, metaTranspProp = 0;
+  diasUteiAteHoje.forEach(d => {
+    const dw = new Date(2026, 3, d).getDay();
+    const prev = calcPrevistoDia(dw);
+    metaCustoProp += prev.custo;
+    metaTranspProp += prev.transp;
+  });
+
+  // Realizados acumulados até hoje
+  let realTransp = 0, realCusto = 0, diasComDados = 0;
+  diasUteiAteHoje.forEach(d => {
+    const dd = state.dias[d];
+    if (dd && dd.transp_real) realTransp += dd.transp_real;
+    if (dd && dd.custo_real) { realCusto += dd.custo_real; diasComDados++; }
+  });
+
+  // Referência
+  document.getElementById('tend-referencia').textContent =
+    nAteHoje + ' de ' + totalDiasUteis + ' dias úteis (' + Math.round(proporcao*100) + '% do mês)';
+
+  // ── TRANSPORTADO ──
+  const gapTransp = realTransp - metaTranspProp;
+  const mediaTranspDia = diasComDados > 0 ? realTransp / diasComDados : 0;
+  const diasRestantes = du.filter(d => d > hojeD).length;
+  const projTransp = realTransp + (mediaTranspDia * diasRestantes);
+  const pctRealTransp = metaTransp > 0 ? Math.min(realTransp/metaTransp, 1) : 0;
+  const pctPropTransp = proporcao;
+
+  // tendência transporte — queremos ACIMA da meta
+  let tendTranspTxt, tendTranspCls;
+  if (diasComDados === 0) { tendTranspTxt = 'Sem dados lançados'; tendTranspCls = 'neutral'; }
+  else if (projTransp >= metaTransp) { tendTranspTxt = 'No caminho de bater a meta'; tendTranspCls = 'ok'; }
+  else if (projTransp >= metaTransp * 0.95) { tendTranspTxt = 'Risco de não bater — acelerar volume'; tendTranspCls = 'warn'; }
+  else { tendTranspTxt = 'Projeção abaixo da meta — ação necessária'; tendTranspCls = 'danger'; }
+
+  set('tt-meta', fmt(metaTransp));
+  set('tt-prop', fmt(metaTranspProp));
+  set('tt-real', fmt(realTransp), diasComDados ? (gapTransp >= 0 ? 'ok' : 'danger') : '');
+  setGap('tt-gap', gapTransp, false); // transporte: positivo é bom
+
+  set('tt-tend', tendTranspTxt, tendTranspCls);
+  set('tt-proj', diasComDados ? fmt(projTransp) : '—', diasComDados ? tendTranspCls : 'neutral');
+  // colored box
+  const ttBox = document.getElementById('tt-tend-box');
+  if (ttBox) {
+    if (tendTranspCls==='ok')      { ttBox.style.background='#EAF3DE'; ttBox.querySelector('div').style.color='#3B6D11'; }
+    else if (tendTranspCls==='warn'){ ttBox.style.background='#FAEEDA'; ttBox.querySelector('div').style.color='#BA7517'; }
+    else if (tendTranspCls==='danger'){ttBox.style.background='#FCEBEB'; ttBox.querySelector('div').style.color='#A32D2D'; }
+    else { ttBox.style.background='#f4f4f0'; ttBox.querySelector('div').style.color='#888780'; }
+  }
+  set('tt-pct-label', diasComDados ? Math.round(pctRealTransp*100)+'% da meta' : '—');
+  document.getElementById('tt-bar-meta').style.width = Math.round(pctPropTransp*100)+'%';
+  document.getElementById('tt-bar-real').style.width = Math.round(pctRealTransp*100)+'%';
+
+  // ── CUSTO ──
+  const gapCusto = realCusto - metaCustoProp;
+  const mediaCustoDia = diasComDados > 0 ? realCusto / diasComDados : 0;
+  const projCusto = realCusto + (mediaCustoDia * diasRestantes);
+  const pctRealCusto = metaCusto > 0 ? Math.min(realCusto/metaCusto, 1) : 0;
+
+  // tendência custo — queremos ABAIXO do orçamento
+  let tendCustoTxt, tendCustoCls, custoBarColor;
+  if (diasComDados === 0) { tendCustoTxt = 'Sem dados lançados'; tendCustoCls = 'neutral'; custoBarColor = '#888780'; }
+  else if (projCusto <= metaCusto) { tendCustoTxt = 'Dentro do orçamento'; tendCustoCls = 'ok'; custoBarColor = '#1D9E75'; }
+  else if (projCusto <= metaCusto * 1.05) { tendCustoTxt = 'Risco de estouro — monitorar'; tendCustoCls = 'warn'; custoBarColor = '#BA7517'; }
+  else { tendCustoTxt = 'Projeção acima do orçamento — intervir'; tendCustoCls = 'danger'; custoBarColor = '#A32D2D'; }
+
+  set('tc-meta', fmt(metaCusto));
+  set('tc-prop', fmt(metaCustoProp));
+  set('tc-real', fmt(realCusto), diasComDados ? (gapCusto <= 0 ? 'ok' : gapCusto/metaCustoProp<=.05?'warn':'danger') : '');
+  setGap('tc-gap', gapCusto, true); // custo: negativo é bom
+
+  set('tc-tend', tendCustoTxt, tendCustoCls);
+  set('tc-proj', diasComDados ? fmt(projCusto) : '—', diasComDados ? tendCustoCls : 'neutral');
+  // colored box
+  const tcBox = document.getElementById('tc-tend-box');
+  if (tcBox) {
+    if (tendCustoCls==='ok')      { tcBox.style.background='#EAF3DE'; tcBox.querySelector('div').style.color='#3B6D11'; }
+    else if (tendCustoCls==='warn'){ tcBox.style.background='#FAEEDA'; tcBox.querySelector('div').style.color='#BA7517'; }
+    else if (tendCustoCls==='danger'){tcBox.style.background='#FCEBEB'; tcBox.querySelector('div').style.color='#A32D2D'; }
+    else { tcBox.style.background='#f4f4f0'; tcBox.querySelector('div').style.color='#888780'; }
+  }
+  set('tc-pct-label', diasComDados ? Math.round(pctRealCusto*100)+'% do orçamento' : '—');
+  document.getElementById('tc-bar-meta').style.width = Math.round(proporcao*100)+'%';
+  const barReal = document.getElementById('tc-bar-real');
+  if (barReal) { barReal.style.width = Math.round(pctRealCusto*100)+'%'; barReal.style.background = custoBarColor; }
+  const legBox = document.getElementById('tc-leg-box');
+  if (legBox) legBox.style.background = custoBarColor;
+}
+
+function set(id, txt, cls) {
+  const el = document.getElementById(id); if (!el) return;
+  el.textContent = txt;
+  el.className = el.className.replace(/(ok|warn|danger|neutral)/g,'').trim();
+  if (cls) el.classList.add(cls);
+}
+function setGap(id, val, invertido) {
+  const el = document.getElementById(id); if (!el) return;
+  const bom = invertido ? val <= 0 : val >= 0;
+  const cls = bom ? 'ok' : Math.abs(val/1000) < 50 ? 'warn' : 'danger';
+  el.textContent = (val >= 0 ? '+' : '') + fmt(val);
+  el.className = el.className.replace(/(ok|warn|danger|neutral)/g,'').trim();
+  el.classList.add(cls);
+}
+
+function renderAll() { renderKPIs(); renderDayGrid(); renderSemanal(); renderTendencia(); }
 
 /* ─── NAVEGAÇÃO ─── */
 function switchTab(name) {
@@ -752,13 +952,11 @@ function gerarResumo() {
   const cfg=state.config, totalPrev=cfg.adm1+cfg.adm2+cfg.analistas+cfg.roadshow+cfg.supervisor;
   let totalReal=0,totalTransp=0,countDias=0;
   getDiasAbril().forEach(({d})=>{const dd=state.dias[d];if(dd&&dd.custo_real){totalReal+=dd.custo_real;totalTransp+=dd.transp_real||0;countDias++;}});
-  const prevAcum=calcPrevAcumulado(), diff=totalReal-prevAcum;
+
   const pctReal=totalTransp?totalReal/totalTransp:0, pctPrev=cfg.faturamento?totalPrev/cfg.faturamento:0;
   const data=new Date().toLocaleDateString('pt-BR');
   let txt='📊 *CONTROLE CUSTO FRETE — ABRIL 2026*\n_Vettore Logística · '+data+'_\n\n';
   txt+='━━━━━━━━━━━━━━━━━━━━\n💰 *RESUMO ACUMULADO ('+countDias+' dias)*\n';
-  txt+='• Previsto acumulado: '+fmt(prevAcum)+'\n• Realizado: '+fmt(totalReal)+'\n';
-  txt+='• Diferença: '+(diff>=0?'▲':'▼')+' '+fmt(Math.abs(diff))+' ('+(diff>=0?'+':'')+fmtPct(prevAcum?diff/prevAcum:0)+')\n\n';
   txt+='🚚 *TRANSPORTADO*\n• Previsto: '+fmt(cfg.faturamento)+'\n• Realizado: '+(countDias?fmt(totalTransp):'sem dados')+'\n\n';
   txt+='📈 *% CUSTO FRETE*\n• Meta mês: '+fmtPct(pctPrev)+'\n• Realizado: '+(countDias?fmtPct(pctReal):'sem dados')+'\n\n';
   txt+='💼 *POR CONTA*\n';
